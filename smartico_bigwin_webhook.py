@@ -59,17 +59,24 @@ def send_telegram_message(text: str) -> bool:
         return False
 
 
-def format_big_win_message(player_id: str, player_name: str,
-                            win_amount: str, game: str,
-                            event_time: str) -> str:
+def format_big_win_message(player_id: str, win_amount: str,
+                            last_deposit: str, total_deposit_count: str,
+                            total_deposit_amount: str, total_withdrawal_count: str,
+                            avg_withdrawal_amount: str, net_deposit_amount: str) -> str:
     """Формирует текст уведомления для Telegram."""
     return (
         "🏆 <b>BIG WIN!</b>\n"
         "━━━━━━━━━━━━━━━━\n"
-        f"👤 <b>Игрок:</b> {player_name} (ID: <code>{player_id}</code>)\n"
+        f"👤 <b>ID игрока:</b> <code>{player_id}</code>\n"
         f"💰 <b>Сумма выигрыша:</b> <b>{win_amount}</b>\n"
-        f"🎮 <b>Игра:</b> {game}\n"
-        f"🕐 <b>Время:</b> {event_time}\n"
+        "━━━━━━━━━━━━━━━━\n"
+        "📊 <b>Статистика игрока:</b>\n"
+        f"  💳 Последний депозит: {last_deposit}\n"
+        f"  🔢 Кол-во депозитов: {total_deposit_count}\n"
+        f"  💵 Сумма депозитов: {total_deposit_amount}\n"
+        f"  🔄 Кол-во выводов: {total_withdrawal_count}\n"
+        f"  📤 Средний вывод: {avg_withdrawal_amount}\n"
+        f"  📈 Нетто депозит: {net_deposit_amount}\n"
         "━━━━━━━━━━━━━━━━\n"
         "#BigWin #Smartico"
     )
@@ -82,12 +89,14 @@ def bigwin_webhook():
     Эндпоинт, который Smartico вызывает как Web Hook (GET).
 
     Ожидаемые query-параметры (настраиваются в Smartico Journey):
-        player_id    — ID игрока
-        player_name  — имя игрока
-        win_amount   — сумма выигрыша
-        game         — название игры
-        event_time   — время события (ISO или Unix timestamp; если пусто — берём текущее)
-        secret       — секретный ключ (если WEBHOOK_SECRET задан)
+        player_id                — ID игрока (state.user_ext_id)
+        win_amount               — сумма выигрыша (state.casino_last_win_amount)
+        last_deposit             — последний депозит (state.acc_last_deposit_amount)
+        total_deposit_count      — кол-во депозитов (state.acc_total_deposit_count)
+        total_deposit_amount     — сумма депозитов (state.acc_total_deposit_amount)
+        total_withdrawal_count   — кол-во выводов (state.acc_total_withdrawal_count)
+        avg_withdrawal_amount    — средний вывод (state.acc_avg_withdrawal_amount)
+        net_deposit_amount       — нетто депозит (state.acc_net_deposit_amount)
     """
 
     # ── Проверка секрета ──────────────────────────────────────────────────
@@ -98,30 +107,23 @@ def bigwin_webhook():
             return jsonify({"status": "error", "message": "Unauthorized"}), 401
 
     # ── Получение параметров ──────────────────────────────────────────────
-    player_id   = request.args.get("player_id",   "N/A")
-    player_name = request.args.get("player_name", "Unknown")
-    win_amount  = request.args.get("win_amount",  "N/A")
-    game        = request.args.get("game",        "N/A")
-    raw_time    = request.args.get("event_time",  "")
+    player_id               = request.args.get("player_id",               "N/A")
+    win_amount              = request.args.get("win_amount",              "N/A")
+    last_deposit            = request.args.get("last_deposit",            "N/A")
+    total_deposit_count     = request.args.get("total_deposit_count",     "N/A")
+    total_deposit_amount    = request.args.get("total_deposit_amount",    "N/A")
+    total_withdrawal_count  = request.args.get("total_withdrawal_count",  "N/A")
+    avg_withdrawal_amount   = request.args.get("avg_withdrawal_amount",   "N/A")
+    net_deposit_amount      = request.args.get("net_deposit_amount",      "N/A")
 
-    # ── Парсинг времени ───────────────────────────────────────────────────
-    if raw_time:
-        try:
-            # Пробуем Unix timestamp
-            ts = float(raw_time)
-            event_time = datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-        except ValueError:
-            event_time = raw_time  # уже строка
-    else:
-        event_time = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
-
-    logger.info(
-        f"Big Win received | player={player_name}({player_id}) "
-        f"amount={win_amount} game={game} time={event_time}"
-    )
+    logger.info(f"Big Win received | player={player_id} amount={win_amount}")
 
     # ── Отправка в Telegram ───────────────────────────────────────────────
-    message = format_big_win_message(player_id, player_name, win_amount, game, event_time)
+    message = format_big_win_message(
+        player_id, win_amount,
+        last_deposit, total_deposit_count, total_deposit_amount,
+        total_withdrawal_count, avg_withdrawal_amount, net_deposit_amount
+    )
     success = send_telegram_message(message)
 
     if success:
