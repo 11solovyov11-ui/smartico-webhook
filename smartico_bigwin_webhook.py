@@ -62,7 +62,7 @@ def send_telegram_message(text: str) -> bool:
 def format_big_win_message(player_id: str, win_amount: str,
                             last_deposit: str, total_deposit_count: str,
                             total_deposit_amount: str, total_withdrawal_count: str,
-                            avg_withdrawal_amount: str, net_deposit_amount: str) -> str:
+                            total_withdrawal_amount: str, net_deposit_amount: str) -> str:
     """Формирует текст уведомления для Telegram."""
     return (
         "🏆 <b>BIG WIN!</b>\n"
@@ -75,7 +75,7 @@ def format_big_win_message(player_id: str, win_amount: str,
         f"  🔢 Кол-во депозитов: {total_deposit_count}\n"
         f"  💵 Сумма депозитов: {total_deposit_amount}\n"
         f"  🔄 Кол-во выводов: {total_withdrawal_count}\n"
-        f"  📤 Средний вывод: {avg_withdrawal_amount}\n"
+        f"  📤 Сумма выводов: {total_withdrawal_amount}\n"
         f"  📈 Нетто депозит: {net_deposit_amount}\n"
         "━━━━━━━━━━━━━━━━\n"
         "#BigWin #Smartico"
@@ -95,7 +95,7 @@ def bigwin_webhook():
         total_deposit_count      — кол-во депозитов (state.acc_total_deposit_count)
         total_deposit_amount     — сумма депозитов (state.acc_total_deposit_amount)
         total_withdrawal_count   — кол-во выводов (state.acc_total_withdrawal_count)
-        avg_withdrawal_amount    — средний вывод (state.acc_avg_withdrawal_amount)
+        total_withdrawal_amount  — сумма выводов (state.acc_total_withdrawal_amount)
         net_deposit_amount       — нетто депозит (state.acc_net_deposit_amount)
     """
 
@@ -113,7 +113,7 @@ def bigwin_webhook():
     total_deposit_count     = request.args.get("total_deposit_count",     "N/A")
     total_deposit_amount    = request.args.get("total_deposit_amount",    "N/A")
     total_withdrawal_count  = request.args.get("total_withdrawal_count",  "N/A")
-    avg_withdrawal_amount   = request.args.get("avg_withdrawal_amount",   "N/A")
+    total_withdrawal_amount = request.args.get("total_withdrawal_amount", "N/A")
     net_deposit_amount      = request.args.get("net_deposit_amount",      "N/A")
 
     logger.info(f"Big Win received | player={player_id} amount={win_amount}")
@@ -122,7 +122,7 @@ def bigwin_webhook():
     message = format_big_win_message(
         player_id, win_amount,
         last_deposit, total_deposit_count, total_deposit_amount,
-        total_withdrawal_count, avg_withdrawal_amount, net_deposit_amount
+        total_withdrawal_count, total_withdrawal_amount, net_deposit_amount
     )
     success = send_telegram_message(message)
 
