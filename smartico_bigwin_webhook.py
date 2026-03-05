@@ -62,13 +62,15 @@ def send_telegram_message(text: str) -> bool:
 def format_big_win_message(player_id: str, win_amount: str,
                             last_deposit: str, total_deposit_count: str,
                             total_deposit_amount: str, total_withdrawal_count: str,
-                            total_withdrawal_amount: str, net_deposit_amount: str) -> str:
+                            total_withdrawal_amount: str, net_deposit_amount: str,
+                            total_balance: str) -> str:
     """Формирует текст уведомления для Telegram."""
     return (
         "🏆 <b>BIG WIN!</b>\n"
         "━━━━━━━━━━━━━━━━\n"
         f"👤 <b>ID игрока:</b> <code>{player_id}</code>\n"
         f"💰 <b>Сумма выигрыша:</b> <b>{win_amount}</b>\n"
+        f"🏦 <b>Баланс:</b> {total_balance}\n"
         "━━━━━━━━━━━━━━━━\n"
         "📊 <b>Статистика игрока:</b>\n"
         f"  💳 Последний депозит: {last_deposit}\n"
@@ -115,6 +117,7 @@ def bigwin_webhook():
     total_withdrawal_count  = request.args.get("total_withdrawal_count",  "N/A")
     total_withdrawal_amount = request.args.get("total_withdrawal_amount", "N/A")
     net_deposit_amount      = request.args.get("net_deposit_amount",      "N/A")
+    total_balance           = request.args.get("total_balance",           "N/A")
 
     logger.info(f"Big Win received | player={player_id} amount={win_amount}")
 
@@ -122,7 +125,8 @@ def bigwin_webhook():
     message = format_big_win_message(
         player_id, win_amount,
         last_deposit, total_deposit_count, total_deposit_amount,
-        total_withdrawal_count, total_withdrawal_amount, net_deposit_amount
+        total_withdrawal_count, total_withdrawal_amount, net_deposit_amount,
+        total_balance
     )
     success = send_telegram_message(message)
 
