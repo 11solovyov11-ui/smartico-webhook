@@ -7,16 +7,3 @@
     "restartPolicyType": "ON_FAILURE"
   }
 }
-```
-
-Нажми **Commit changes** — Railway автоматически запустит новый деплой.
-
----
-
-Также проверь в репо что файл `Procfile` выглядит **точно так** (без `.txt`):
-```
-Procfile
-```
-с содержимым:
-```
-web: gunicorn smartico_bigwin_webhook:app
