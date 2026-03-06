@@ -38,15 +38,15 @@ def send_telegram_message(bot_token, chat_id, text):
 
 def get_params():
     return {
-        "player_id":               request.args.get("state.user_ext_id",               "N/A"),
-        "win_amount":              request.args.get("state.casino_last_win_amount",     "N/A"),
-        "total_balance":           request.args.get("state.acc_total_balance",          "N/A"),
-        "last_deposit":            request.args.get("state.acc_last_deposit_amount",    "N/A"),
-        "total_deposit_count":     request.args.get("state.acc_total_deposit_count",    "N/A"),
-        "total_deposit_amount":    request.args.get("state.acc_total_deposit_amount",   "N/A"),
-        "total_withdrawal_count":  request.args.get("state.acc_total_withdrawal_count", "N/A"),
-        "total_withdrawal_amount": request.args.get("state.acc_total_withdrawal_amount","N/A"),
-        "net_deposit_amount":      request.args.get("state.acc_net_deposit_amount",     "N/A"),
+        "player_id":               request.args.get("state.user_ext_id"),
+        "win_amount":              request.args.get("state.casino_last_win_amount"),
+        "total_balance":           request.args.get("state.acc_total_balance"),
+        "last_deposit":            request.args.get("state.acc_last_deposit_amount"),
+        "total_deposit_count":     request.args.get("state.acc_total_deposit_count"),
+        "total_deposit_amount":    request.args.get("state.acc_total_deposit_amount"),
+        "total_withdrawal_count":  request.args.get("state.acc_total_withdrawal_count"),
+        "total_withdrawal_amount": request.args.get("state.acc_total_withdrawal_amount"),
+        "net_deposit_amount":      request.args.get("state.acc_net_deposit_amount"),
     }
 
 
