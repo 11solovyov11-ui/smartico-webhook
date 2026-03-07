@@ -102,7 +102,7 @@ def bigwin_webhook():
     total_withdrawal_amount = request.args.get("total_withdrawal_amount", "N/A")
     net_deposit_amount      = request.args.get("net_deposit_amount",      "N/A")
     total_balance           = request.args.get("total_balance",           "N/A")
-    logger.info(f"Big Win received | player={player_id} amount={win_amount}")
+    logger.info(f"Big Win received | full args: {dict(request.args)}")
     message = format_big_win_message(
         player_id, win_amount, last_deposit, total_deposit_count,
         total_deposit_amount, total_withdrawal_count, total_withdrawal_amount,
@@ -125,7 +125,7 @@ def bigwin_vip_webhook():
     total_withdrawal_amount = request.args.get("total_withdrawal_amount", "N/A")
     net_deposit_amount      = request.args.get("net_deposit_amount",      "N/A")
     total_balance           = request.args.get("total_balance",           "N/A")
-    logger.info(f"Big Win VIP received | player={player_id} amount={win_amount}")
+    logger.info(f"Big Win VIP received | full args: {dict(request.args)}")
     message = format_big_win_message(
         player_id, win_amount, last_deposit, total_deposit_count,
         total_deposit_amount, total_withdrawal_count, total_withdrawal_amount,
